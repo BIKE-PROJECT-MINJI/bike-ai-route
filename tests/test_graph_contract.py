@@ -139,6 +139,28 @@ def test_worker_preserves_backend_elevation_summary():
     assert response.routePoints[1].altitudeM == 236.0
 
 
+def test_worker_preserves_backend_preference_and_evidence_status():
+    request = AiRoutePlanRequest(
+        lat=37.4812,
+        lon=126.9527,
+        destinationLat=37.5512,
+        destinationLon=126.9882,
+        destinationLabel="남산 N서울타워",
+        rideStyle="SCENERY_FIRST",
+        elevationPreference="CLIMB_FIRST",
+        preferenceSummary="경치 우선 + 업힐 선호 + 남산 정석 접근",
+        elevationStatus="VERIFIED",
+        sceneryEvidenceStatus="PARTIAL",
+        recommendationScore=82,
+    )
+
+    response = plan_route(request)
+
+    assert response.preferenceSummary == "경치 우선 + 업힐 선호 + 남산 정석 접근"
+    assert response.elevationStatus == "VERIFIED"
+    assert response.sceneryEvidenceStatus == "PARTIAL"
+
+
 def test_settings_prefers_gemini_key_without_exposing_secret(monkeypatch):
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.setenv("GEMINI_API_KEY", "test-gemini-key")
@@ -347,6 +369,7 @@ def test_domain_prompt_sections_are_testable_units():
     )
 
     assert build_preference_context(request)["primaryLens"] == "자전거도로 우선"
+    assert build_preference_context(request)["preferenceSummary"] is None
     assert build_route_evidence_context(request)["graphhopperSources"] == ["graphhopper.bike_network"]
     assert "공사" in build_risk_policy_context(request)["mustMention"]
     assert build_copy_tone_context()["tone"] == "자전거 여행 큐레이터"

@@ -28,6 +28,7 @@ def build_preference_context(request: AiRoutePlanRequest) -> dict:
         "destinationLabel": request.destinationLabel,
         "rideStyle": request.rideStyle,
         "primaryLens": labels.get(request.rideStyle or "", "균형형"),
+        "preferenceSummary": request.preferenceSummary,
         "instruction": "사용자 선호를 설명 관점으로만 사용하고 점수나 경로 좌표를 바꾸지 않는다.",
     }
 
@@ -41,6 +42,7 @@ def build_route_evidence_context(request: AiRoutePlanRequest) -> dict:
     return {
         "provider": "GraphHopper",
         "graphhopperSources": graphhopper_sources,
+        "sceneryEvidenceStatus": request.sceneryEvidenceStatus,
         "evidenceBadges": [badge.model_dump() for badge in request.evidenceBadges],
         "instruction": "GraphHopper evidence는 도로/노면/자전거 네트워크/고도 설명 근거로만 사용한다.",
     }
@@ -49,6 +51,7 @@ def build_route_evidence_context(request: AiRoutePlanRequest) -> dict:
 def build_elevation_context(request: AiRoutePlanRequest) -> dict:
     return {
         "elevationPreference": request.elevationPreference,
+        "elevationStatus": request.elevationStatus,
         "elevationSummary": request.elevationSummary.model_dump() if request.elevationSummary else None,
         "instruction": "평지/업힐/균형 선호는 backend score와 고도 evidence를 설명하는 데만 사용한다.",
     }
@@ -142,6 +145,9 @@ class GeminiExplanationClient:
                 "rideStyle": request.rideStyle,
                 "elevationPreference": request.elevationPreference,
                 "textIntent": request.textIntent,
+                "preferenceSummary": request.preferenceSummary,
+                "elevationStatus": request.elevationStatus,
+                "sceneryEvidenceStatus": request.sceneryEvidenceStatus,
                 "recommendationScore": request.recommendationScore,
                 "scoreBreakdown": request.scoreBreakdown.model_dump() if request.scoreBreakdown else None,
                 "elevationSummary": request.elevationSummary.model_dump() if request.elevationSummary else None,
