@@ -44,6 +44,7 @@ def build_route_evidence_context(request: AiRoutePlanRequest) -> dict:
         "graphhopperSources": graphhopper_sources,
         "sceneryEvidenceStatus": request.sceneryEvidenceStatus,
         "evidenceBadges": [badge.model_dump() for badge in request.evidenceBadges],
+        "routingMetadata": request.routingMetadata.model_dump() if request.routingMetadata else None,
         "instruction": "GraphHopper evidence는 도로/노면/자전거 네트워크/고도 설명 근거로만 사용한다.",
     }
 
@@ -151,6 +152,7 @@ class GeminiExplanationClient:
                 "recommendationScore": request.recommendationScore,
                 "scoreBreakdown": request.scoreBreakdown.model_dump() if request.scoreBreakdown else None,
                 "elevationSummary": request.elevationSummary.model_dump() if request.elevationSummary else None,
+                "routingMetadata": request.routingMetadata.model_dump() if request.routingMetadata else None,
                 "weather": request.weather,
                 "constructionSummary": request.constructionSummary,
                 "roadSurfaceSummary": request.roadSurfaceSummary,

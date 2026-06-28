@@ -16,6 +16,7 @@ from app.schemas import (
     AiRouteElevationSummary,
     AiRouteExplanation,
     AiRoutePlanRequest,
+    AiRouteRoutingMetadata,
     RecommendationScore,
 )
 from app.settings import WorkerSettings
@@ -159,6 +160,31 @@ def test_worker_preserves_backend_preference_and_evidence_status():
     assert response.preferenceSummary == "경치 우선 + 업힐 선호 + 남산 정석 접근"
     assert response.elevationStatus == "VERIFIED"
     assert response.sceneryEvidenceStatus == "PARTIAL"
+
+
+def test_worker_preserves_backend_routing_metadata():
+    request = AiRoutePlanRequest(
+        lat=37.4812,
+        lon=126.9527,
+        destinationLat=37.5512,
+        destinationLon=126.9882,
+        destinationLabel="남산 N서울타워",
+        recommendationScore=82,
+        routingMetadata=AiRouteRoutingMetadata(
+            routingStatus="SUCCESS",
+            provider="GRAPHHOPPER",
+            fallbackUsed=False,
+            fallbackReason=None,
+            qualityStatus="VALID",
+            qualityMessage="GraphHopper route detail 확인",
+        ),
+    )
+
+    response = plan_route(request)
+
+    assert response.routingMetadata is not None
+    assert response.routingMetadata.provider == "GRAPHHOPPER"
+    assert response.routingMetadata.qualityStatus == "VALID"
 
 
 def test_settings_prefers_gemini_key_without_exposing_secret(monkeypatch):

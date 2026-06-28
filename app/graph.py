@@ -129,6 +129,7 @@ def plan_route(request: AiRoutePlanRequest) -> AiRoutePlanResponse:
         explanation=result["explanation"],
         evidenceBadges=request.evidenceBadges,
         elevationSummary=request.elevationSummary,
+        routingMetadata=request.routingMetadata,
         preferenceSummary=request.preferenceSummary,
         elevationStatus=request.elevationStatus,
         sceneryEvidenceStatus=request.sceneryEvidenceStatus,

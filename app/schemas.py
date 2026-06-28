@@ -56,6 +56,15 @@ class AiRouteFallbackPlan(BaseModel):
     routePoints: list[AiRoutePoint] = Field(default_factory=list)
 
 
+class AiRouteRoutingMetadata(BaseModel):
+    routingStatus: str | None = None
+    provider: str | None = None
+    fallbackUsed: bool | None = None
+    fallbackReason: str | None = None
+    qualityStatus: str | None = None
+    qualityMessage: str | None = None
+
+
 class AiRoutePlanRequest(BaseModel):
     lat: float
     lon: float
@@ -71,6 +80,7 @@ class AiRoutePlanRequest(BaseModel):
     recommendationScore: int | None = None
     scoreBreakdown: RecommendationScore | None = None
     elevationSummary: AiRouteElevationSummary | None = None
+    routingMetadata: AiRouteRoutingMetadata | None = None
     evidenceBadges: list[AiRouteEvidenceBadge] = Field(default_factory=list)
     preferenceSummary: str | None = None
     elevationStatus: str | None = None
@@ -94,6 +104,7 @@ class AiRoutePlanResponse(BaseModel):
     evidenceBadges: list[AiRouteEvidenceBadge] = Field(default_factory=list)
     aiGenerated: bool = True
     elevationSummary: AiRouteElevationSummary | None = None
+    routingMetadata: AiRouteRoutingMetadata | None = None
     preferenceSummary: str | None = None
     elevationStatus: str | None = None
     sceneryEvidenceStatus: str | None = None
